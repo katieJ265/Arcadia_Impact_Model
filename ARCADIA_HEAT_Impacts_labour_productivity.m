@@ -240,7 +240,7 @@ end
 % (intermediate output) - Test using near-past data
 
 figure;
-x=1:w;
+x=1:nWorkIntensityGroups;
 subplot(1,2,1);
 % Create bar and set individual colours
 b = bar(ResultsPastLabourUK{1}(:,1));

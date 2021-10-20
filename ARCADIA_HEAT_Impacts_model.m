@@ -81,7 +81,8 @@
 disp('*******************************************************************')
 disp('ARCADIA Heat related Mortality Impacts Model')
 disp('version 01')
-disp('This version currently only estimates heat-related mortality')
+disp('This version currently estimates heat-related mortality')
+disp('and intermediate results for labour productivity')
 disp('*******************************************************************')
 
 tic %stopwatch to measure performance
@@ -98,10 +99,13 @@ socioEcScen = 2; % Climate change only && climate change and socio-economic chan
 adaptScen = 3; %Used to calculate results for acclimatisation scenarios by adjusting MortalityThreshold: None = 1; 1degreeC = 2; 2degreeC =3
 cnt = 1; % counter to loop through acclimatisation adaptation scenarios(adaptScen), i.e. +1 and +2degreeC acclimatisation scenario
 
-%User defined parameters - change here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% User defined parameters - change here %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 BiasCorrected = 0; %TRUE = 1, FALSE = 0 %%USER DEFINED AT THIS STAGE
 adaptIncrement = [0,1,2]; %i.e. +1 and +2degreeC acclimatisation scenario
-impactMetric = 2; %Select impact to run - 1 = mortality; 2 = labour productivity
+impactMetric = 1; %Select impact to run - 1 = mortality; 2 = labour productivity
 
 if BiasCorrected == 0 %false
         daysPerYear = 360;
@@ -1268,7 +1272,11 @@ if BiasCorrected == 0
         end
     end
     
-save ('avMortPerIncrementUK.mat', 'avMortPerIncrementUK')
+if exist ('avMortPerIncrementUK.mat', 'file')
+    load ('avMortPerIncrementUK')
+else
+    save ('avMortPerIncrementUK.mat', 'avMortPerIncrementUK')
+end
 
 elseif BiasCorrected == 1
     if exist ('ResultsPast_Bias.mat', 'file')
@@ -2135,7 +2143,12 @@ elseif BiasCorrected == 1
             end
         end
     end
-save ('avMortPerIncrementUK_bias.mat', 'avMortPerIncrementUK')
+    
+    if exist ('avMortPerIncrementUK_bias.mat', 'file')
+        load ('avMortPerIncrementUK')
+    else
+        save ('avMortPerIncrementUK_bias.mat', 'avMortPerIncrementUK')
+    end
 end
 
 %% Amalgamate results for plotting - UK data based on sum of gridded data (All ages and by age group)Average, 10th and 90th P summed.
@@ -2479,6 +2492,17 @@ legend(labels);
 % title ('Climate and Population Change');
 
 %% clustered bar - mortality per each 1 degree increment for each scenario
+
+if BiasCorrected == 0 %false
+   if exist ('avMortPerIncrementUK.mat', 'file')  %calculate for each time period - based on input files
+        load('avMortPerIncrementUK')
+   end
+elseif BiasCorrected == 1 %true
+   if exist ('avMortPerIncrementUK_bias.mat', 'file')  %calculate for each time period - based on input files
+        load('avMortPerIncrementUK')
+   end
+end
+
 figure
 subplot(2,1,1);
 
